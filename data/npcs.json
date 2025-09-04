@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "name": "Helena la Juste",
+    "clan": "Toreador",
+    "generation": "6",
+    "notes": "",
+    "attributes": null
+  },
+  {
+    "id": 2,
+    "name": "Joe",
+    "clan": "Nosferatu",
+    "generation": "12",
+    "notes": "",
+    "attributes": {
+      "Appearance": 1,
+      "Charisma": 1,
+      "Dexterity": 1,
+      "Intelligence": 1,
+      "Manipulation": 1,
+      "Perception": 1,
+      "Stamina": 1,
+      "Strength": 2,
+      "Wits": 1
+    }
+  }
+]
