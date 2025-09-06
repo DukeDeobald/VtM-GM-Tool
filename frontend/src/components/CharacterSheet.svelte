@@ -1,3 +1,4 @@
+
 <script>
   import { AddCharacter, GetCharacters, UpdateCharacter, DeleteCharacter } from '../../wailsjs/go/main/App.js';
   import { onMount } from 'svelte';
@@ -63,7 +64,6 @@
       await getCharacters();
     } catch (error) {
       console.error("Error adding character:", error);
-      alert("Failed to add character: " + error.message);
     }
   }
 
@@ -72,7 +72,6 @@
       characters = await GetCharacters();
     } catch (error) {
       console.error("Error getting characters:", error);
-      alert("Failed to load characters: " + error.message);
     }
   }
 
@@ -87,7 +86,6 @@
       await getCharacters();
     } catch (error) {
       console.error("Error updating character:", error);
-      alert("Failed to update character: " + error.message);
     }
   }
 
@@ -100,7 +98,6 @@
       await getCharacters();
     } catch (error) {
       console.error("Error deleting character:", error);
-      alert("Failed to delete character: " + error.message);
     }
   }
 
@@ -109,131 +106,153 @@
   });
 </script>
 
-<div>
-  <h2>Character Sheet</h2>
-
-  <h3>Add New Character</h3>
+<div class="card">
+  <h2>Add New Character</h2>
   <form on:submit|preventDefault={addCharacter} class="character-form">
-    <label for="name">Name:</label>
-    <input type="text" id="name" bind:value={newCharacter.name} required />
-
-    <label for="clan">Clan:</label>
-    <input type="text" id="clan" bind:value={newCharacter.clan} />
-
-    <label for="generation">Generation:</label>
-    <input type="text" id="generation" bind:value={newCharacter.generation} />
-
-    <label for="concept">Concept:</label>
-    <input type="text" id="concept" bind:value={newCharacter.concept} />
-
-    <label for="sire">Sire:</label>
-    <input type="text" id="sire" bind:value={newCharacter.sire} />
+    <div class="form-grid">
+        <input type="text" placeholder="Name" bind:value={newCharacter.name} required />
+        <input type="text" placeholder="Clan" bind:value={newCharacter.clan} />
+        <input type="text" placeholder="Generation" bind:value={newCharacter.generation} />
+        <input type="text" placeholder="Concept" bind:value={newCharacter.concept} />
+        <input type="text" placeholder="Sire" bind:value={newCharacter.sire} />
+    </div>
 
     <h4>Attributes</h4>
-    {#each attributeNames as attrName}
-      <label for="{attrName}">{attrName}:</label>
-      <input type="number" id="{attrName}" bind:value={newCharacter.attributes[attrName]} min="1" max="5" />
-    {/each}
+    <div class="attributes-grid">
+        {#each attributeNames as attrName}
+            <div class="attribute-item">
+                <label for="{attrName}">{attrName}</label>
+                <input type="number" id="{attrName}" bind:value={newCharacter.attributes[attrName]} min="1" max="5" />
+            </div>
+        {/each}
+    </div>
 
-    <h4>Abilities - Talents</h4>
-    {#each talentNames as abilityName}
-      <label for="talent-{abilityName}">{abilityName}:</label>
-      <input type="number" id="talent-{abilityName}" bind:value={newCharacter.abilities.talents[abilityName]} min="0" max="5" />
-    {/each}
-
-    <h4>Abilities - Skills</h4>
-    {#each skillNames as abilityName}
-      <label for="skill-{abilityName}">{abilityName}:</label>
-      <input type="number" id="skill-{abilityName}" bind:value={newCharacter.abilities.skills[abilityName]} min="0" max="5" />
-    {/each}
-
-    <h4>Abilities - Knowledges</h4>
-    {#each knowledgeNames as abilityName}
-      <label for="knowledge-{abilityName}">{abilityName}:</label>
-      <input type="number" id="knowledge-{abilityName}" bind:value={newCharacter.abilities.knowledges[abilityName]} min="0" max="5" />
-    {/each}
+    <h4>Abilities</h4>
+    <div class="abilities-grid">
+        <div class="ability-group">
+            <h5>Talents</h5>
+            {#each talentNames as abilityName}
+                <div class="ability-item">
+                    <label for="talent-{abilityName}">{abilityName}</label>
+                    <input type="number" id="talent-{abilityName}" bind:value={newCharacter.abilities.talents[abilityName]} min="0" max="5" />
+                </div>
+            {/each}
+        </div>
+        <div class="ability-group">
+            <h5>Skills</h5>
+            {#each skillNames as abilityName}
+                <div class="ability-item">
+                    <label for="skill-{abilityName}">{abilityName}</label>
+                    <input type="number" id="skill-{abilityName}" bind:value={newCharacter.abilities.skills[abilityName]} min="0" max="5" />
+                </div>
+            {/each}
+        </div>
+        <div class="ability-group">
+            <h5>Knowledges</h5>
+            {#each knowledgeNames as abilityName}
+                <div class="ability-item">
+                    <label for="knowledge-{abilityName}">{abilityName}</label>
+                    <input type="number" id="knowledge-{abilityName}" bind:value={newCharacter.abilities.knowledges[abilityName]} min="0" max="5" />
+                </div>
+            {/each}
+        </div>
+    </div>
 
     <h4>Disciplines</h4>
     <div class="discipline-input">
       <input type="text" placeholder="Discipline Name" bind:value={newDisciplineName} />
       <input type="number" bind:value={newDisciplineRating} min="0" max="5" />
-      <button type="button" on:click={() => addDiscipline(newCharacter)}>Add Discipline</button>
+      <button type="button" on:click={() => addDiscipline(newCharacter)}>Add</button>
     </div>
     <div class="discipline-list">
       {#each Object.entries(newCharacter.disciplines) as [name, rating]}
-        <span>{name}: {rating} <button type="button" on:click={() => removeDiscipline(newCharacter, name)}>X</button></span>
+        <span>{name}: {rating} <button type="button" class="small" on:click={() => removeDiscipline(newCharacter, name)}>X</button></span>
       {/each}
     </div>
 
     <h4>Notes</h4>
-    <textarea bind:value={newCharacter.notes}></textarea>
+    <textarea bind:value={newCharacter.notes} placeholder="Character notes..."></textarea>
 
     <button type="submit">Add Character</button>
   </form>
+</div>
 
-  {#if editingCharacter}
-    <h3>Edit Character (ID: {editingCharacter.id})</h3>
+{#if editingCharacter}
+  <div class="card">
+    <h2>Edit Character (ID: {editingCharacter.id})</h2>
     <form on:submit|preventDefault={updateCharacter} class="character-form">
-      <label for="edit-name">Name:</label>
-      <input type="text" id="edit-name" bind:value={editingCharacter.name} required />
+        <div class="form-grid">
+            <input type="text" placeholder="Name" bind:value={editingCharacter.name} required />
+            <input type="text" placeholder="Clan" bind:value={editingCharacter.clan} />
+            <input type="text" placeholder="Generation" bind:value={editingCharacter.generation} />
+            <input type="text" placeholder="Concept" bind:value={editingCharacter.concept} />
+            <input type="text" placeholder="Sire" bind:value={editingCharacter.sire} />
+        </div>
 
-      <label for="edit-clan">Clan:</label>
-      <input type="text" id="edit-clan" bind:value={editingCharacter.clan} />
+        <h4>Attributes</h4>
+        <div class="attributes-grid">
+            {#each attributeNames as attrName}
+                <div class="attribute-item">
+                    <label for="edit-{attrName}">{attrName}</label>
+                    <input type="number" id="edit-{attrName}" bind:value={editingCharacter.attributes[attrName]} min="1" max="5" />
+                </div>
+            {/each}
+        </div>
 
-      <label for="edit-generation">Generation:</label>
-      <input type="text" id="edit-generation" bind:value={editingCharacter.generation} />
+        <h4>Abilities</h4>
+        <div class="abilities-grid">
+            <div class="ability-group">
+                <h5>Talents</h5>
+                {#each talentNames as abilityName}
+                    <div class="ability-item">
+                        <label for="edit-talent-{abilityName}">{abilityName}</label>
+                        <input type="number" id="edit-talent-{abilityName}" bind:value={editingCharacter.abilities.talents[abilityName]} min="0" max="5" />
+                    </div>
+                {/each}
+            </div>
+            <div class="ability-group">
+                <h5>Skills</h5>
+                {#each skillNames as abilityName}
+                    <div class="ability-item">
+                        <label for="edit-skill-{abilityName}">{abilityName}</label>
+                        <input type="number" id="edit-skill-{abilityName}" bind:value={editingCharacter.abilities.skills[abilityName]} min="0" max="5" />
+                    </div>
+                {/each}
+            </div>
+            <div class="ability-group">
+                <h5>Knowledges</h5>
+                {#each knowledgeNames as abilityName}
+                    <div class="ability-item">
+                        <label for="edit-knowledge-{abilityName}">{abilityName}</label>
+                        <input type="number" id="edit-knowledge-{abilityName}" bind:value={editingCharacter.abilities.knowledges[abilityName]} min="0" max="5" />
+                    </div>
+                {/each}
+            </div>
+        </div>
 
-      <label for="edit-concept">Concept:</label>
-      <input type="text" id="edit-concept" bind:value={editingCharacter.concept} />
+        <h4>Disciplines</h4>
+        <div class="discipline-input">
+          <input type="text" placeholder="Discipline Name" bind:value={newDisciplineName} />
+          <input type="number" bind:value={newDisciplineRating} min="0" max="5" />
+          <button type="button" on:click={() => addDiscipline(editingCharacter)}>Add</button>
+        </div>
+        <div class="discipline-list">
+          {#each Object.entries(editingCharacter.disciplines) as [name, rating]}
+            <span>{name}: {rating} <button type="button" class="small" on:click={() => removeDiscipline(editingCharacter, name)}>X</button></span>
+          {/each}
+        </div>
 
-      <label for="edit-sire">Sire:</label>
-      <input type="text" id="edit-sire" bind:value={editingCharacter.sire} />
-
-      <h4>Attributes</h4>
-      {#each attributeNames as attrName}
-        <label for="edit-{attrName}">{attrName}:</label>
-        <input type="number" id="edit-{attrName}" bind:value={editingCharacter.attributes[attrName]} min="1" max="5" />
-      {/each}
-
-      <h4>Abilities - Talents</h4>
-      {#each talentNames as abilityName}
-        <label for="edit-talent-{abilityName}">{abilityName}:</label>
-        <input type="number" id="edit-talent-{abilityName}" bind:value={editingCharacter.abilities.talents[abilityName]} min="0" max="5" />
-      {/each}
-
-      <h4>Abilities - Skills</h4>
-      {#each skillNames as abilityName}
-        <label for="edit-skill-{abilityName}">{abilityName}:</label>
-        <input type="number" id="edit-skill-{abilityName}" bind:value={editingCharacter.abilities.skills[abilityName]} min="0" max="5" />
-      {/each}
-
-      <h4>Abilities - Knowledges</h4>
-      {#each knowledgeNames as abilityName}
-        <label for="edit-knowledge-{abilityName}">{abilityName}:</label>
-        <input type="number" id="edit-knowledge-{abilityName}" bind:value={editingCharacter.abilities.knowledges[abilityName]} min="0" max="5" />
-      {/each}
-
-      <h4>Disciplines</h4>
-      <div class="discipline-input">
-        <input type="text" placeholder="Discipline Name" bind:value={newDisciplineName} />
-        <input type="number" bind:value={newDisciplineRating} min="0" max="5" />
-        <button type="button" on:click={() => addDiscipline(editingCharacter)}>Add Discipline</button>
-      </div>
-      <div class="discipline-list">
-        {#each Object.entries(editingCharacter.disciplines) as [name, rating]}
-          <span>{name}: {rating} <button type="button" on:click={() => removeDiscipline(editingCharacter, name)}>X</button></span>
-        {/each}
-      </div>
-
-      <h4>Notes</h4>
-      <textarea bind:value={editingCharacter.notes}></textarea>
+        <h4>Notes</h4>
+        <textarea bind:value={editingCharacter.notes} placeholder="Character notes..."></textarea>
 
       <button type="submit">Update Character</button>
-      <button type="button" on:click={() => (editingCharacter = null)}>Cancel</button>
+      <button type="button" class="secondary" on:click={() => (editingCharacter = null)}>Cancel</button>
     </form>
-  {/if}
+  </div>
+{/if}
 
-  <h3>Existing Characters</h3>
+<div class="card">
+  <h2>Existing Characters</h2>
   {#if characters.length > 0}
     <table>
       <thead>
@@ -241,12 +260,9 @@
           <th>Name</th>
           <th>Clan</th>
           <th>Generation</th>
-          <th>Concept</th>
-          <th>Sire</th>
           <th>Attributes</th>
           <th>Abilities</th>
           <th>Disciplines</th>
-          <th>Notes</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -256,36 +272,30 @@
             <td>{char.name}</td>
             <td>{char.clan}</td>
             <td>{char.generation}</td>
-            <td>{char.concept}</td>
-            <td>{char.sire}</td>
             <td>
               {#each Object.entries(char.attributes) as [key, value]}
-                {key}: {value}<br />
+                <span class="stat">{key}: {value}</span>
               {/each}
             </td>
             <td>
-              <strong>Talents:</strong><br />
               {#each Object.entries(char.abilities.talents) as [key, value]}
-                {#if value > 0}{key}: {value}<br />{/if}
+                {#if value > 0}<span class="stat">{key}: {value}</span>{/if}
               {/each}
-              <strong>Skills:</strong><br />
               {#each Object.entries(char.abilities.skills) as [key, value]}
-                {#if value > 0}{key}: {value}<br />{/if}
+                {#if value > 0}<span class="stat">{key}: {value}</span>{/if}
               {/each}
-              <strong>Knowledges:</strong><br />
               {#each Object.entries(char.abilities.knowledges) as [key, value]}
-                {#if value > 0}{key}: {value}<br />{/if}
+                {#if value > 0}<span class="stat">{key}: {value}</span>{/if}
               {/each}
             </td>
             <td>
               {#each Object.entries(char.disciplines || {}) as [key, value]}
-                {key}: {value}<br />
+                <span class="stat">{key}: {value}</span>
               {/each}
             </td>
-            <td>{char.notes}</td>
             <td>
               <button on:click={() => editCharacter(char)}>Edit</button>
-              <button on:click={() => deleteCharacter(char.id)}>Delete</button>
+              <button class="secondary" on:click={() => deleteCharacter(char.id)}>Delete</button>
             </td>
           </tr>
         {/each}
@@ -297,91 +307,92 @@
 </div>
 
 <style>
-  .character-form {
-    display: grid;
-    grid-template-columns: 120px 1fr; /* Adjust column width for labels */
-    gap: 10px;
-    margin-bottom: 20px;
-    max-width: 600px;
-  }
+    .character-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-  .character-form label {
-    text-align: right;
-    padding-right: 10px;
-  }
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
 
-  .character-form input[type="text"], .character-form textarea {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-  }
+    .attributes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
 
-  .character-form input[type="number"] {
-    width: 60px;
-    text-align: center;
-  }
+    .attribute-item {
+        display: flex;
+        flex-direction: column;
+    }
 
-  .character-form h4 {
-    grid-column: 1 / -1; /* Span all columns */
-    margin-top: 20px;
-    margin-bottom: 10px;
-    color: #ff6666; /* Lighter red for headings */
-  }
+    .attribute-item label {
+        margin-bottom: 5px;
+        font-size: 0.9em;
+        color: var(--text-secondary);
+    }
 
-  .character-form textarea {
-    grid-column: 2; /* Make textarea span the second column */
-    margin-top: 5px; /* Add some space above it */
-  }
+    .abilities-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
 
-  .character-form button {
-    grid-column: 2;
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
-    margin-top: 10px;
-  }
+    .ability-group h5 {
+        color: var(--text-primary);
+        margin-bottom: 10px;
+    }
 
-  .character-form button[type="button"] {
-    background-color: #555555;
-  }
+    .ability-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+    }
 
-  .character-form button[type="button"]:hover {
-    background-color: #777777;
-  }
+    .ability-item label {
+        font-size: 0.9em;
+    }
 
-  .discipline-input {
-    grid-column: 1 / -1;
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
+    .discipline-input {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
 
-  .discipline-input input {
-    flex-grow: 1;
-  }
+    .discipline-input input[type="number"] {
+        width: 80px;
+    }
 
-  .discipline-list {
-    grid-column: 1 / -1;
-    margin-bottom: 10px;
-  }
+    .discipline-list span {
+        display: inline-block;
+        background-color: var(--background-tertiary);
+        padding: 5px 10px;
+        border-radius: 3px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
 
-  .discipline-list span {
-    display: inline-block;
-    background-color: #444;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-  }
+    .discipline-list button.small {
+        padding: 2px 5px;
+        font-size: 0.8em;
+        margin-left: 5px;
+    }
 
-  .discipline-list button {
-    background-color: #cc0000;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    padding: 2px 5px;
-    cursor: pointer;
-    font-size: 0.8em;
-    margin-left: 5px;
-  }
+    .stat {
+        display: inline-block;
+        background-color: var(--background-tertiary);
+        padding: 2px 6px;
+        border-radius: 3px;
+        margin: 2px;
+        font-size: 0.9em;
+    }
+
+    td {
+        vertical-align: top;
+    }
 </style>

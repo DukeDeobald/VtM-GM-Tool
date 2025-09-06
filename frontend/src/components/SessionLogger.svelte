@@ -1,3 +1,4 @@
+
 <script>
   import { AddSessionLog, GetSessionLogs, UpdateSessionLog, DeleteSessionLog } from '../../wailsjs/go/main/App.js';
   import { onMount } from 'svelte';
@@ -9,7 +10,6 @@
   async function addSessionLog() {
     try {
       if (newLogContent.trim() === '') {
-        alert("Session log cannot be empty.");
         return;
       }
       await AddSessionLog(newLogContent);
@@ -17,7 +17,6 @@
       await getSessionLogs();
     } catch (error) {
       console.error("Error adding session log:", error);
-      alert("Failed to add session log: " + error.message);
     }
   }
 
@@ -26,7 +25,6 @@
       sessionLogs = await GetSessionLogs();
     } catch (error) {
       console.error("Error getting session logs:", error);
-      alert("Failed to load session logs: " + error.message);
     }
   }
 
@@ -37,7 +35,6 @@
   async function updateSessionLog() {
     try {
       if (editingLog.content.trim() === '') {
-        alert("Session log cannot be empty.");
         return;
       }
       await UpdateSessionLog(editingLog);
@@ -45,7 +42,6 @@
       await getSessionLogs();
     } catch (error) {
       console.error("Error updating session log:", error);
-      alert("Failed to update session log: " + error.message);
     }
   }
 
@@ -58,7 +54,6 @@
       await getSessionLogs();
     } catch (error) {
       console.error("Error deleting session log:", error);
-      alert("Failed to delete session log: " + error.message);
     }
   }
 
@@ -67,74 +62,85 @@
   });
 </script>
 
-<div>
+<div class="card">
   <h2>Session Log</h2>
 
-  <h3>Add New Log Entry</h3>
-  <textarea bind:value={newLogContent} placeholder="Enter session notes here..." rows="10"></textarea>
-  <button on:click={addSessionLog}>Add Log Entry</button>
+  <form on:submit|preventDefault={addSessionLog}>
+    <textarea bind:value={newLogContent} placeholder="Enter session notes here..." rows="8"></textarea>
+    <button type="submit">Add Log Entry</button>
+  </form>
 
   {#if editingLog}
-    <h3>Edit Log Entry (ID: {editingLog.id})</h3>
-    <textarea bind:value={editingLog.content} rows="10"></textarea>
-    <button on:click={updateSessionLog}>Update Log</button>
-    <button type="button" on:click={() => (editingLog = null)}>Cancel</button>
+    <div class="card editing-card">
+        <h3>Edit Log Entry</h3>
+        <textarea bind:value={editingLog.content} rows="8"></textarea>
+        <button on:click={updateSessionLog}>Update Log</button>
+        <button type="button" class="secondary" on:click={() => (editingLog = null)}>Cancel</button>
+    </div>
   {/if}
 
   <h3>Previous Log Entries</h3>
-  {#if sessionLogs.length > 0}
-    {#each sessionLogs as logEntry (logEntry.id)}
-      <div class="log-entry">
-        <p>{logEntry.content}</p>
-        <small>Log ID: {logEntry.id}</small>
-        <div class="log-actions">
-          <button on:click={() => editSessionLog(logEntry)}>Edit</button>
-          <button on:click={() => deleteSessionLog(logEntry.id)}>Delete</button>
-        </div>
-      </div>
-    {/each}
-  {:else}
-    <p>No session logs yet.</p>
-  {/if}
+  <div class="log-list">
+      {#if sessionLogs.length > 0}
+        {#each sessionLogs as logEntry (logEntry.id)}
+          <div class="log-entry card">
+            <p>{logEntry.content}</p>
+            <div class="log-meta">
+                <small>Log ID: {logEntry.id}</small>
+                <div class="log-actions">
+                  <button class="small" on:click={() => editSessionLog(logEntry)}>Edit</button>
+                  <button class="small secondary" on:click={() => deleteSessionLog(logEntry.id)}>Delete</button>
+                </div>
+            </div>
+          </div>
+        {/each}
+      {:else}
+        <p>No session logs yet.</p>
+      {/if}
+  </div>
 </div>
 
 <style>
-  textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-  }
+    form {
+        margin-bottom: 30px;
+    }
 
-  button {
-    display: block;
-    margin-top: 10px;
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
-    margin-bottom: 20px;
-  }
+    textarea {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 
-  .log-entry {
-    border: 1px solid #444;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #2a2a2a;
-    color: #e0e0e0;
-  }
+    .editing-card {
+        background-color: var(--background-tertiary);
+        margin-bottom: 20px;
+    }
 
-  .log-entry p {
-    margin-top: 0;
-    white-space: pre-wrap;
-  }
+    .log-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
 
-  .log-entry small {
-    color: #aaa;
-  }
+    .log-entry p {
+        white-space: pre-wrap;
+        margin-bottom: 15px;
+    }
 
-  .log-actions button {
-    margin-right: 10px;
-    margin-bottom: 0;
-    display: inline-block;
-  }
+    .log-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-secondary);
+        font-size: 0.9em;
+    }
+
+    .log-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    button.small {
+        padding: 5px 10px;
+        font-size: 0.9em;
+    }
 </style>
